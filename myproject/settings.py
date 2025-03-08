@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-#q_ycoa76)3w3o%1^bxgk^$jdkolq&(#anxdhp5f1(8g&d5+on
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower()=="true"
 
-ALLOWED_HOSTS = ['your-app.onrender.com', 'localhost']
+ALLOWED_HOSTS = ['auth-drive-chat.onrender.com', 'localhost']
 
 
 # Application definition
