@@ -12,6 +12,7 @@ cryptography==44.0.2
 daphne==4.1.2
 decouple==0.0.7
 Django==5.1.6
+git-filter-repo==2.47.0
 google-api-core==2.24.1
 google-api-python-client==2.162.0
 google-auth==2.38.0
