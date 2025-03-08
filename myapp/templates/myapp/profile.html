@@ -1,0 +1,41 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2 class="text-center mb-4">Profile</h2>
+    <div class="text-center">
+        {% if picture %}
+        <img src="{{ picture }}" alt="Profile Picture" class="profile-picture rounded-circle" style="width: 120px; height: 120px;">
+        {% else %}
+        <div class="profile-picture bg-secondary d-flex align-items-center justify-content-center text-white rounded-circle" style="width: 120px; height: 120px;">
+            <span style="font-size: 2rem;">{{ name|first|upper }}</span>
+        </div>
+        {% endif %}
+        <h3 class="mt-3">{{ name }}</h3>
+        <p class="text-muted">{{ email }}</p>
+    </div>
+
+    <!-- Google Account Information -->
+    <div class="card mt-4">
+        <div class="card-header">
+            Your Google Account Information
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <tbody>
+                        {% for key, value in user_info.items %}
+                        <tr>
+                            <th>{{ key }}</th>
+                            <td>{{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

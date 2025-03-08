@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            padding-top: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-picture {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-picture:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .profile-info p {
+            margin: 0;
+            color: #666;
+        }
+
+        .btn-logout {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: #e60000;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 1.25rem;
+            color: #333;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .table {
+            color: #333;
+        }
+
+        .table th {
+            font-weight: 600;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .text-center {
+            color: #666;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                {% if picture %}
+                <img src="{{ picture }}" alt="Profile Picture" class="profile-picture">
+                {% else %}
+                <div class="profile-picture bg-secondary d-flex align-items-center justify-content-center text-white">
+                    <span>{{ name|first|upper }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="profile-info">
+                    <h2>{{ name }}</h2>
+                    <p class="text-muted">{{ email }}</p>
+                </div>
+                
+                <div>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-logout">Logout</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Google Account Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Your Google Account Information
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                                {% for key, value in user_info.items %}
+                                <tr>
+                                    <th>{{ key }}</th>
+                                    <td>{{ value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Google Drive Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Google Drive Actions
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'upload_file' %}" class="btn btn-primary mb-2">Upload File</a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-2">List Files</a>
+                </div>
+            </div>
+
+            <!-- File Search -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Search Files in Google Drive
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'search_files' %}">
+                        <div class="input-group mb-3">
+                            <input type="text" name="q" class="form-control" placeholder="Search for files..." required>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results or File List -->
+            {% if search_query %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    Search Results for "{{ search_query }}"
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in files %}
+                                <tr>
+                                    <td>{{ file.name }}</td>
+                                    <td>
+                                        <a href="{% url 'download_file' file.id %}" class="btn btn-primary btn-sm">Download</a>
+                                        <a href="{% url 'preview_file' file.id %}" class="btn btn-secondary btn-sm">Preview</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    Your Google Drive Files
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in files %}
+                                <tr>
+                                    <td>{{ file.name }}</td>
+                                    <td>
+                                        <a href="{% url 'download_file' file.id %}" class="btn btn-primary btn-sm">Download</a>
+                                        <a href="{% url 'preview_file' file.id %}" class="btn btn-secondary btn-sm">Preview</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Real-Time Chat -->
+            <!-- dashboard.html -->
+            <div id="chat-log" style="height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
+            <input id="chat-message-input" type="text" placeholder="Type your message...">
+            <button id="chat-message-submit">Send</button>
+
+            <!-- Footer Message -->
+            <div class="text-center">
+                <p class="text-muted">Successfully authenticated with Google OAuth</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebSocket Script for Real-Time Chat -->
+    <script>
+        const roomName = 'general';  // Fixed room name for simplicity
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+    
+        // Function to handle incoming messages
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);  // Parse the JSON message
+            const chatLog = document.querySelector('#chat-log');
+    
+            // Create a new message element
+            const messageElement = document.createElement('div');
+            messageElement.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+    
+            // Append the message to the chat log
+            chatLog.appendChild(messageElement);
+    
+            // Scroll to the bottom of the chat log
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+    
+        // Handle WebSocket connection errors
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+    
+        // Send message when the "Send" button is clicked
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+    
+            // Send the message to the WebSocket server
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': '{{ request.user.username }}',  // Use the logged-in user's username
+            }));
+    
+            // Clear the input field
+            messageInputDom.value = '';
+        };
+    
+        // Send message when the "Enter" key is pressed
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // Enter key
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+    </script>
+</html>

@@ -1,0 +1,95 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Drive{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2 class="text-center mb-4">Google Drive</h2>
+    
+    <!-- Google Drive Actions -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Google Drive Actions
+        </div>
+        <div class="card-body">
+            <a href="{% url 'upload_file' %}" class="btn btn-primary mb-2">Upload File</a>
+        </div>
+    </div>
+
+    <!-- File Search -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Search Files in Google Drive
+        </div>
+        <div class="card-body">
+            <form method="get" action="{% url 'search_files' %}">
+                <div class="input-group mb-3">
+                    <input type="text" name="q" class="form-control" placeholder="Search for files..." required style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-color);">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Results or File List -->
+    {% if search_query %}
+    <div class="card mb-4">
+        <div class="card-header">
+            Search Results for "{{ search_query }}"
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        <tr>
+                            <td>{{ file.name }}</td>
+                            <td>
+                                <a href="{% url 'download_file' file.id %}" class="btn btn-primary btn-sm">Download</a>
+                                <a href="{% url 'preview_file' file.id %}" class="btn btn-secondary btn-sm">Preview</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card mb-4">
+        <div class="card-header">
+            Your Google Drive Files
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        <tr>
+                            <td>{{ file.name }}</td>
+                            <td>
+                                <a href="{% url 'download_file' file.id %}" class="btn btn-primary btn-sm">Download</a>
+                                <a href="{% url 'preview_file' file.id %}" class="btn btn-secondary btn-sm" target="_blank">Preview</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

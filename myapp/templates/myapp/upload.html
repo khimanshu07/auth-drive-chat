@@ -1,0 +1,25 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Upload File{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2 class="text-center mb-4">Upload File to Google Drive</h2>
+    
+    <!-- Display errors if any -->
+    {% if error %}
+    <div class="alert alert-danger">
+        <strong>{{ error }}</strong>: {{ error_description }}
+    </div>
+    {% endif %}
+    
+    <!-- Upload Form -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input type="file" name="file" class="form-control" required style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-color);">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Upload</button>
+    </form>
+</div>
+{% endblock %}
